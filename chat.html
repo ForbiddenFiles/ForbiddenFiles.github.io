@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приватный Чат (Серверная версия)</title>
+    <style>
+        /* (Стили скопированы из предыдущего ответа для сохранения вида) */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .chat-container { width: 100%; max-width: 500px; background-color: white; border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); overflow: hidden; display: flex; flex-direction: column; height: 80vh; }
+        #login-screen { padding: 40px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; background-color: #e6f0ff; }
+        #login-screen input[type="password"] { padding: 12px; margin: 15px 0; width: 80%; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; text-align: center; }
+        #login-screen button { background-color: #007bff; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 1.1em; transition: background-color 0.3s; }
+        #login-screen button:hover { background-color: #0056b3; }
+        #login-screen h2 { color: #007bff; }
+        #chat-app { display: none; flex-direction: column; height: 100%; }
+        .chat-header { background-color: #007bff; color: white; padding: 15px; text-align: center; font-size: 1.2em; font-weight: 600; }
+        #messages-container { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 75%; padding: 10px 15px; border-radius: 18px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); line-height: 1.4; }
+        .message.Олег { align-self: flex-start; background-color: #e6f0ff; color: #333; border-bottom-left-radius: 4px; }
+        .message.Вера { align-self: flex-end; background-color: #ffe6f0; color: #333; border-bottom-right-radius: 4px; }
+        .message strong { display: block; font-weight: 700; margin-bottom: 3px; font-size: 0.85em; }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #eee; }
+        #message-text { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; margin-right: 10px; font-size: 1em; }
+        #send-button { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 1em; transition: background-color 0.3s; }
+        #send-button:hover { background-color: #1e7e34; }
+        #error-message { color: red; margin-top: 10px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        
+        <div id="login-screen">
+            <h2>🔐 Вход в Приватный Чат</h2>
+            <p>Введите ваш пароль для доступа.</p>
+            <input type="password" id="password-input" placeholder="Введите пароль">
+            <button onclick="login()">Войти в Чат</button>
+            <div id="error-message"></div>
+        </div>
+
+        <div id="chat-app">
+            <div class="chat-header">
+                Приватный Чат | Вы вошли как: <span id="current-user">Гость</span>
+            </div>
+            
+            <div id="messages-container">
+                </div>
+            
+            <div class="chat-input">
+                <input type="text" id="message-text" placeholder="Напишите сообщение..." onkeydown="handleKey(event)">
+                <button id="send-button" onclick="sendMessage()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PASSWORDS = {
+            "oleg123": "Олег",
+            "vera456": "Вера"
+        };
+        // Указываем путь к PHP-скрипту
+        const PHP_HANDLER_URL = 'chat_handler.php'; 
+
+        let currentUser = null; 
+        const chatApp = document.getElementById('chat-app');
+        const loginScreen = document.getElementById('login-screen');
+        const messagesContainer = document.getElementById('messages-container');
+        const currentUserSpan = document.getElementById('current-user');
+        const passwordInput = document.getElementById('password-input');
+        const errorMessageDiv = document.getElementById('error-message');
+        const messageText = document.getElementById('message-text');
+
+        // === ФУНКЦИИ СВЯЗИ С СЕРВЕРОМ ===
+
+        // 1. Загрузка всех сообщений с сервера
+        function loadMessages() {
+            fetch(PHP_HANDLER_URL + '?action=get')
+                .then(response => response.json())
+                .then(data => {
+                    messagesContainer.innerHTML = '';
+                    if (data.status === 'success') {
+                        data.messages.forEach(msg => {
+                            // Сообщения приходят в формате "Олег: текст"
+                            const parts = msg.split(': ');
+                            if (parts.length >= 2) {
+                                const user = parts[0].trim();
+                                const text = parts.slice(1).join(': ').trim();
+                                displayMessage(user, text);
+                            }
+                        });
+                        scrollToBottom();
+                    } else {
+                        console.error("Ошибка загрузки:", data.message);
+                    }
+                })
+                .catch(error => console.error('Ошибка AJAX при загрузке:', error));
+        }
+
+        // 2. Отправка нового сообщения на сервер
+        function sendMessage() {
+            const text = messageText.value.trim();
+            if (text === "" || !currentUser) return;
+
+            // Формируем данные для отправки на сервер
+            const messageData = new FormData();
+            messageData.append('action', 'send');
+            messageData.append('user', currentUser);
+            messageData.append('text', text);
+
+            fetch(PHP_HANDLER_URL, {
+                method: 'POST',
+                body: messageData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    messageText.value = '';
+                    loadMessages(); // Перезагружаем всю историю, чтобы увидеть свое сообщение и, возможно, новые от другого пользователя
+                } else {
+                    alert('Ошибка отправки сообщения: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Ошибка AJAX при отправке:', error));
+        }
+
+        // === ФУНКЦИИ ИНТЕРФЕЙСА ===
+
+        function login() {
+            const password = passwordInput.value.trim();
+            currentUser = PASSWORDS[password];
+
+            if (currentUser) {
+                currentUserSpan.textContent = currentUser;
+                loginScreen.style.display = 'none';
+                chatApp.style.display = 'flex';
+                errorMessageDiv.textContent = '';
+                passwordInput.value = '';
+                
+                loadMessages(); 
+                // Устанавливаем таймер для периодической проверки новых сообщений
+                setInterval(loadMessages, 3000); // Обновление каждые 3 секунды
+            } else {
+                errorMessageDiv.textContent = 'Неверный пароль. Попробуйте еще раз.';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        function displayMessage(user, text) {
+            const messageDiv = document.createElement('div');
+            // Используем имя пользователя как класс для стилизации
+            const userClass = user; 
+            
+            messageDiv.className = `message ${userClass}`;
+            messageDiv.innerHTML = `<strong>${user}:</strong> ${text}`;
+            
+            messagesContainer.appendChild(messageDiv);
+        }
+
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function handleKey(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+                event.preventDefault(); 
+            }
+        }
+        
+        passwordInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                login();
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            passwordInput.focus();
+        });
+    </script>
+
+</body>
+</html>
