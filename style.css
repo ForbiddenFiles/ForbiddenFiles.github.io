@@ -1,0 +1,279 @@
+:root {
+  --bg: #0c0e12;
+  --surface: #151920;
+  --surface-2: #1c212b;
+  --text: #e8eaed;
+  --text-muted: #9aa3b2;
+  --accent: #6ea8fe;
+  --accent-hover: #8bbcff;
+  --border: #2a3140;
+  --radius: 14px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  font-size: 17px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+a:hover {
+  color: var(--accent-hover);
+}
+
+.container {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ========== Header ========== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(12, 14, 18, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.logo span {
+  color: var(--accent);
+}
+
+nav {
+  display: flex;
+  gap: 1.75rem;
+}
+nav a {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+nav a:hover,
+nav a.active {
+  color: var(--text);
+}
+
+/* ========== Main content ========== */
+main {
+  padding: 2.5rem 0 4rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  margin-bottom: 2.75rem;
+}
+
+/* ========== Post list ========== */
+.post-list article {
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.post-list article:first-child {
+  padding-top: 0;
+}
+.post-list article:last-child {
+  border-bottom: none;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-title {
+  font-size: 1.35rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+  line-height: 1.35;
+}
+.post-title a {
+  color: var(--text);
+}
+.post-title a:hover {
+  color: var(--accent);
+}
+
+.post-excerpt {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+}
+
+/* ========== Single post ========== */
+.article-header {
+  margin-bottom: 2.25rem;
+}
+
+.article-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  margin-bottom: 0.75rem;
+}
+
+.article-meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.article-content h2 {
+  font-size: 1.4rem;
+  font-weight: 650;
+  margin: 2.4rem 0 0.9rem;
+  letter-spacing: -0.02em;
+}
+
+.article-content h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.8rem 0 0.7rem;
+}
+
+.article-content p {
+  margin-bottom: 1.15rem;
+}
+
+.article-content ul,
+.article-content ol {
+  margin: 0 0 1.25rem 1.4rem;
+}
+
+.article-content li {
+  margin-bottom: 0.4rem;
+}
+
+.article-content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.4rem 0 0.4rem 1.2rem;
+  margin: 1.5rem 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ========== Comments (Giscus) ========== */
+.comments {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.comments h2 {
+  font-size: 1.35rem;
+  font-weight: 650;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.giscus-fallback {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ========== About card ========== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.card p {
+  margin-bottom: 1.1rem;
+}
+.card p:last-child {
+  margin-bottom: 0;
+}
+
+/* ========== Footer ========== */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+footer a {
+  color: var(--text-muted);
+}
+footer a:hover {
+  color: var(--accent);
+}
+
+/* ========== Utilities ========== */
+.back-link {
+  display: inline-block;
+  margin-top: 2.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+.back-link:hover {
+  color: var(--accent);
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 600px) {
+  .page-title,
+  .article-title {
+    font-size: 1.7rem;
+  }
+  nav {
+    gap: 1.1rem;
+  }
+  .container {
+    padding: 0 1.15rem;
+  }
+}
