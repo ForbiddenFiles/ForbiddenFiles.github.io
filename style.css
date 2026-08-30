@@ -277,3 +277,31 @@ footer a:hover {
     padding: 0 1.15rem;
   }
 }
+
+
+/* ===== Giscus — на всю ширину ===== */
+.comments {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+.comments h2 {
+  font-size: 1.35rem;
+  font-weight: 650;
+  margin-bottom: 1.25rem;
+}
+
+/* Сам виджет Giscus */
+.giscus,
+.giscus-frame {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Убираем лишние ограничения iframe */
+iframe.giscus-frame {
+  width: 100% !important;
+  min-width: 100% !important;
+}
